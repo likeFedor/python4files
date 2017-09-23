@@ -56,6 +56,8 @@ if __name__ == "__main__":
       xls.cpSheet('Sheet1')
       xls.save()
       xls.close()
+
+
 class easyWord:
     def __int__(self,filename=None):
         w = win32com.client.Dispatch('Word.Application')

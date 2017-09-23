@@ -49,7 +49,7 @@ class easyWord:
         wordSel = myRange.Select()
         print (myRange.Text)
 
-
+#处理word里有多个表
     def multiexcTables(self,r,c):
         count=self.doc.Tables.Count#有几个表
         for num in range(count-1,-1,-1):
@@ -63,26 +63,6 @@ class easyWord:
         #self.doc.Tables[0].Rows.Add() # 增加一行
         print (self.doc.Tables[t].Rows[r].Cells[c].Range.Text)#Columns[c] 表从0开始
 
-# wordSel.Style = constants.wdStyleHeading1
-# 正文文字替换
-#w.Selection.Find.ClearFormatting()
-#w.Selection.Find.Replacement.ClearFormatting()
-#w.Selection.Find.Execute("OldStr",False,False,False,False,False,True,1,True,"NewStr",2)
-# 页眉文字替换
-#w.ActiveDocument.Sections[0].Headers[0].Range.Find.ClearFormatting()
-#w.ActiveDocument.Sections[0].Headers[0].Range.Find.Replacement.ClearFormatting()
-#w.ActiveDocument.Sections[0].Headers[0].Range.Find.Execute("OldStr",False,False,False,False,False,True,1,False,"NewStr",2)
-# 转换为html
-#wc = win32com.client.constants
-#w.ActiveDocument.WebOptions.RelyOnCSS = 1
-#w.ActiveDocument.WebOptions.OptimizeForBrowser = 1
-#w.ActiveDocument.WebOptions.BrowserLevel = 0 # constants.wdBrowserLevelV4
-#w.ActiveDocument.WebOptions.OrganizeInFolder = 0
-#w.ActiveDocument.WebOptions.UseLongFileNames = 1
-#w.ActiveDocument.WebOptions.RelyOnVML = 0
-#w.ActiveDocument.WebOptions.AllowPNG = 1
-    
-	
     def saveAs(self):
         filenameout=r'd:/newtest.doc'
         self.w.ActiveDocument.SaveAs( FileName =filenameout)
@@ -109,11 +89,11 @@ if __name__=='__main__':
     wzy_path=input('文件路径:')
     cal=0 #计数器变量
     for i in walkdir(wzy_path):
-        print(cal)
         cal+=1
+		print(cal)
        #print(i) #注意隐藏文件 win下看不到，但是参与遍历~$a.doc 一定要删除
         docx=easyWord(i)
         #docx.multiexcTables(1,1)
         wzy_content=docx.getcontent()
-        regex="m.ke\s\w+"
+        regex="(?:姓名：)(\w+)"  #如何关闭圆括号的捕获能力？而只是用它来做分组，方法是在左括号的后边加上:?，这里第一个圆括弧只是用来分组，而不会占用捕获变量，所以$1的内容只能是make后面的内容
         docx.searchKeyword(regex,wzy_content)

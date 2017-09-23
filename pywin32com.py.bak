@@ -3,7 +3,6 @@
 from win32com.client import Dispatch, constants
 import win32com.client
 class easyExcel:
-
       def __init__(self, filename=None):
           #打开excel模块
           self.xlApp = win32com.client.Dispatch('Excel.Application')
