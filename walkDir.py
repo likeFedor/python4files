@@ -90,10 +90,11 @@ if __name__=='__main__':
     cal=0 #计数器变量
     for i in walkdir(wzy_path):
         cal+=1
-		print(cal)
+        print(cal)
        #print(i) #注意隐藏文件 win下看不到，但是参与遍历~$a.doc 一定要删除
         docx=easyWord(i)
         #docx.multiexcTables(1,1)
         wzy_content=docx.getcontent()
         regex="(?:姓名：)(\w+)"  #如何关闭圆括号的捕获能力？而只是用它来做分组，方法是在左括号的后边加上:?，这里第一个圆括弧只是用来分组，而不会占用捕获变量，所以$1的内容只能是make后面的内容
         docx.searchKeyword(regex,wzy_content)
+
