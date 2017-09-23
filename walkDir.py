@@ -4,7 +4,8 @@ import os
 def walkdir(path):  
     for dirpath, _dirnames,filenames in os.walk(path):  
         for filename in filenames:
-	        yield os.path.join(str(dirpath),str(filename))
+            if(filename[0]!='~'):#为了排除隐藏文件，因为隐藏文件是打不开的，多以~付好开始。截取字符串的写法。
+	            yield os.path.join(str(dirpath),str(filename))
 
 #读取内容
 from win32com.client import Dispatch, constants
@@ -25,6 +26,7 @@ class easyWord:
         else:
             self.doc=w.Documents.Add()#否则打开新文档
 
+
     def getcontent(self):
         pr=''
         #读取段落
@@ -37,6 +39,8 @@ class easyWord:
                 pr+=self.doc.Paragraphs[i].Range.Text
             pr.replace(u'\xa0', u' ')#\xa0 这个字符报错。因为没有这个字符
         return pr
+
+
     def insertContent(self):
         # 插入文字
         myRange = self.doc.Range(0,10)
@@ -44,11 +48,14 @@ class easyWord:
         # 使用样式
         wordSel = myRange.Select()
         print (myRange.Text)
+
+
     def multiexcTables(self,r,c):
         count=self.doc.Tables.Count#有几个表
         for num in range(count-1,-1,-1):
             if self.doc.Tables[num].Rows[r].Cells[c].Range.Text!=None:
                 print (self.doc.Tables[num].Rows[r].Cells[c].Range.Text)
+
 
     def excTable(self,t,r,c):	
         # 表格操作
@@ -74,9 +81,10 @@ class easyWord:
 #w.ActiveDocument.WebOptions.UseLongFileNames = 1
 #w.ActiveDocument.WebOptions.RelyOnVML = 0
 #w.ActiveDocument.WebOptions.AllowPNG = 1
+    
+	
     def saveAs(self):
         filenameout=r'd:/newtest.doc'
-
         self.w.ActiveDocument.SaveAs( FileName =filenameout)
 # 打印
 #doc.PrintOut()
@@ -84,24 +92,28 @@ class easyWord:
 # doc.Close()
         self.w.Documents.Close()
         self.w.Quit()
+
+
 #正则表达式,获取符合的文本
     def searchKeyword(self,wzy_keyword,wzy_text):
         pattern=re.compile(wzy_keyword)
         match1=pattern.findall(wzy_text)
-        wzy_match1=''.join(match1)
-        print(wzy_match1.replace(u'\xa0', u' '))
+        wzy_match1=','.join(match1)
+        wzy_match1=wzy_match1.replace(u'\xa0', u' ')
+        print(wzy_match1)
         #self.wzy_file.write(wzy_match1)
         #self.wzy_file.close()
+
+
 if __name__=='__main__':
-    j=0
-    for i in walkdir(r'D:\PycharmProjects\pygit\python4file\test'):
-        print(j)
-        j=j+1
-       # print(i) #注意隐藏文件 win下看不到，但是参与遍历~$a.doc 一定要删除
+    wzy_path=input('文件路径:')
+    cal=0 #计数器变量
+    for i in walkdir(wzy_path):
+        print(cal)
+        cal+=1
+       #print(i) #注意隐藏文件 win下看不到，但是参与遍历~$a.doc 一定要删除
         docx=easyWord(i)
         #docx.multiexcTables(1,1)
         wzy_content=docx.getcontent()
-        docx.searchKeyword("",wzy_content)
-
-
-
+        regex="m.ke\s\w+"
+        docx.searchKeyword(regex,wzy_content)
