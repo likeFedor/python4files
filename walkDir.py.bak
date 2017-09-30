@@ -7,13 +7,33 @@ def walkdir(path):
             if(filename[0]!='~'):#为了排除隐藏文件，因为隐藏文件是打不开的，多以~付好开始。截取字符串的写法。
 	            yield os.path.join(str(dirpath),str(filename))
 
+
 #读取内容
 from win32com.client import Dispatch, constants
 import win32com.client
 import re
+
+#处理txt
+class easyTxt:
+    def __init__(self,filename=None):
+        if filename:
+            self.txt=open(filename,'r')
+        else:
+            print ("name this txt")
+    def getcontent(self):
+        if self.txt:
+            #line=self.txt.readline()#单行读取
+            lines=self.txt.readlines()
+        for line in lines:
+            print (line)
+    def closefile(self):
+        if self.txt:
+            self.txt.close()
+
+#处理word
 class easyWord:
     def __init__(self,filename=None):
-        self.wzy_file=open(r'data.txt','w')
+        self.wzy_file=open(r'data.txt','a')#需要写入结果的文件
         w = win32com.client.Dispatch('Word.Application')
         # 或者使用下面的方法，使用启动独立的进程：
         # w = win32com.client.DispatchEx('Word.Application')
@@ -25,7 +45,6 @@ class easyWord:
             self.doc=w.Documents.Open(filename)
         else:
             self.doc=w.Documents.Add()#否则打开新文档
-
 
     def getcontent(self):
         pr=''
@@ -49,13 +68,13 @@ class easyWord:
         wordSel = myRange.Select()
         print (myRange.Text)
 
-
+#处理word里有多个表
     def multiexcTables(self,r,c):
-        count=self.doc.Tables.Count#有几个表
+        count=self.doc.Tables.Count #有几个表
         for num in range(count-1,-1,-1):
             if self.doc.Tables[num].Rows[r].Cells[c].Range.Text!=None:
                 print (self.doc.Tables[num].Rows[r].Cells[c].Range.Text)
-
+                self.wzy_file.write(self.doc.Tables[num].Rows[r].Cells[c].Range.Text+'\n')
 
     def excTable(self,t,r,c):	
         # 表格操作
@@ -63,27 +82,7 @@ class easyWord:
         #self.doc.Tables[0].Rows.Add() # 增加一行
         print (self.doc.Tables[t].Rows[r].Cells[c].Range.Text)#Columns[c] 表从0开始
 
-# wordSel.Style = constants.wdStyleHeading1
-# 正文文字替换
-#w.Selection.Find.ClearFormatting()
-#w.Selection.Find.Replacement.ClearFormatting()
-#w.Selection.Find.Execute("OldStr",False,False,False,False,False,True,1,True,"NewStr",2)
-# 页眉文字替换
-#w.ActiveDocument.Sections[0].Headers[0].Range.Find.ClearFormatting()
-#w.ActiveDocument.Sections[0].Headers[0].Range.Find.Replacement.ClearFormatting()
-#w.ActiveDocument.Sections[0].Headers[0].Range.Find.Execute("OldStr",False,False,False,False,False,True,1,False,"NewStr",2)
-# 转换为html
-#wc = win32com.client.constants
-#w.ActiveDocument.WebOptions.RelyOnCSS = 1
-#w.ActiveDocument.WebOptions.OptimizeForBrowser = 1
-#w.ActiveDocument.WebOptions.BrowserLevel = 0 # constants.wdBrowserLevelV4
-#w.ActiveDocument.WebOptions.OrganizeInFolder = 0
-#w.ActiveDocument.WebOptions.UseLongFileNames = 1
-#w.ActiveDocument.WebOptions.RelyOnVML = 0
-#w.ActiveDocument.WebOptions.AllowPNG = 1
-    
-	
-	def saveAs(self):
+    def saveAs(self):
         filenameout=r'd:/newtest.doc'
         self.w.ActiveDocument.SaveAs( FileName =filenameout)
 # 打印
@@ -103,17 +102,18 @@ class easyWord:
         print(wzy_match1)
         #self.wzy_file.write(wzy_match1)
         #self.wzy_file.close()
-
-
 if __name__=='__main__':
+    easyfile=easyTxt('readme.txt')
+    easyfile.getcontent()
+    easyfile.closefile()
     wzy_path=input('文件路径:')
-    cal=0
+    cal=0 #计数器变量
     for i in walkdir(wzy_path):
-        print(cal)
         cal+=1
+        print(cal)
        #print(i) #注意隐藏文件 win下看不到，但是参与遍历~$a.doc 一定要删除
         docx=easyWord(i)
-        #docx.multiexcTables(1,1)
+        docx.multiexcTables(1,1)
         wzy_content=docx.getcontent()
-        regex="m.ke\s\w+"
+        regex="(?:姓名：)(\w+)"  #如何关闭圆括号的捕获能力？而只是用它来做分组，方法是在左括号的后边加上:?，这里第一个圆括弧只是用来分组，而不会占用捕获变量，所以$1的内容只能是make后面的内容
         docx.searchKeyword(regex,wzy_content)
