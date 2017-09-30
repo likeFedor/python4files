@@ -30,6 +30,7 @@ class easyTxt:
         if self.txt:
             self.txt.close()
 
+
 #处理word
 class easyWord:
     def __init__(self,filename=None):
@@ -91,6 +92,8 @@ class easyWord:
         print(wzy_match1)
         #self.wzy_file.write(wzy_match1)
         #self.wzy_file.close()
+
+
 class easyExcel:
     def __init__(self, filename=None):
           #打开excel模块

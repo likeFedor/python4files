@@ -1,6 +1,6 @@
 #-*- coding:utf-8 -*-
 import os
-#遍历所有的表
+#遍历文件夹下所有文件
 def walkdir(path):  
     for dirpath, _dirnames,filenames in os.walk(path):  
         for filename in filenames:
