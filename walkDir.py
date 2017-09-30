@@ -30,6 +30,7 @@ class easyTxt:
         if self.txt:
             self.txt.close()
 
+
 #处理word
 class easyWord:
     def __init__(self,filename=None):
@@ -45,7 +46,6 @@ class easyWord:
             self.doc=w.Documents.Open(filename)
         else:
             self.doc=w.Documents.Add()#否则打开新文档
-
     def getcontent(self):
         pr=''
         #读取段落
@@ -58,8 +58,6 @@ class easyWord:
                 pr+=self.doc.Paragraphs[i].Range.Text
             pr.replace(u'\xa0', u' ')#\xa0 这个字符报错。因为没有这个字符
         return pr
-
-
     def insertContent(self):
         # 插入文字
         myRange = self.doc.Range(0,10)
@@ -67,7 +65,6 @@ class easyWord:
         # 使用样式
         wordSel = myRange.Select()
         print (myRange.Text)
-
 #处理word里有多个表
     def multiexcTables(self,r,c):
         count=self.doc.Tables.Count #有几个表
@@ -75,24 +72,17 @@ class easyWord:
             if self.doc.Tables[num].Rows[r].Cells[c].Range.Text!=None:
                 print (self.doc.Tables[num].Rows[r].Cells[c].Range.Text)
                 self.wzy_file.write(self.doc.Tables[num].Rows[r].Cells[c].Range.Text+'\n')
-
+#处理单个表
     def excTable(self,t,r,c):	
         # 表格操作
         #self.doc.Tables[0].Rows[0].Cells[0].Range.Text ='123123'
         #self.doc.Tables[0].Rows.Add() # 增加一行
         print (self.doc.Tables[t].Rows[r].Cells[c].Range.Text)#Columns[c] 表从0开始
-
     def saveAs(self):
         filenameout=r'd:/newtest.doc'
         self.w.ActiveDocument.SaveAs( FileName =filenameout)
-# 打印
-#doc.PrintOut()
-# 关闭
-# doc.Close()
         self.w.Documents.Close()
         self.w.Quit()
-
-
 #正则表达式,获取符合的文本
     def searchKeyword(self,wzy_keyword,wzy_text):
         pattern=re.compile(wzy_keyword)
@@ -102,10 +92,39 @@ class easyWord:
         print(wzy_match1)
         #self.wzy_file.write(wzy_match1)
         #self.wzy_file.close()
+
+
+class easyExcel:
+    def __init__(self, filename=None):
+          #打开excel模块
+          self.xlApp = win32com.client.Dispatch('Excel.Application')
+          if filename:
+              self.filename = filename
+              #打开excel表
+              self.xlBook = self.xlApp.Workbooks.Open(filename)
+          else:
+              #添加表
+              self.xlBook = self.xlApp.Workbooks.Add()
+              self.filename = ''
+    def getCell(self, sheet, row, col):
+          #获得表中表单中的单元格中的值
+          sht = self.xlBook.Worksheets(sheet)
+          return sht.Cells(row, col).Value
+    def setCell(self, sheet, row, col, value):
+        #设置表单中单元格的值
+        sht = self.xlBook.Worksheets(sheet)
+        sht.Cells(row, col).Value = value
+      
+        
 if __name__=='__main__':
+#txt 测试代码
     easyfile=easyTxt('readme.txt')
     easyfile.getcontent()
     easyfile.closefile()
+#excel 测试代码
+    xlsx=easyExcel(r'G:\pyfile\pyGit\python4file\1.xlsx')
+    print(xlsx.getCell('sheet1',1,1)) 
+#word 测试代码
     wzy_path=input('文件路径:')
     cal=0 #计数器变量
     for i in walkdir(wzy_path):
