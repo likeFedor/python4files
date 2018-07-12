@@ -1,0 +1,52 @@
+#-*- coding:utf-8 -*-
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+import pandas as pd
+def putdata():
+    dataframe=pd.read_csv('2017-04-10.csv',encoding='gbk',sep=',')
+    for i in range(0,10):
+        cname=dataframe.iloc[i,2]
+        print(cname)
+
+
+def submitxyzp():
+#chrome经常有莫名的错误所以建议使用Firefox
+#options = webdriver.ChromeOptions()
+#options.add_experimental_option("excludeSwitches",["ignore-certificate-errors"])
+#browser = webdriver.Chrome(chrome_options=options)
+    browser = webdriver.Firefox()
+    browser.get('http://xyzp.newjobs.com.cn/index.html')
+#button = driver.find_element_by_class_name('zl_btn')寻找button
+#time.sleep(3)
+#button.click()
+
+#assert u"百度一下" in browser.title
+#elem = browser.find_element_by_name("wd")
+    elem_active=browser.find_element_by_xpath("//html/body/div[2]/div[2]/div/ul/li[2]")#("//table[@class='aaa']")
+    elem_active.click()
+    elem_name=browser.find_element_by_id('c_login_userName')
+    elem_name.send_keys("likeFedor")
+    elem_pwd=browser.find_element_by_id("c_login_psd")#寻找表单id
+    elem_pwd.send_keys("56156808")
+    elem_smb=browser.find_element_by_id("c_login_btn")
+    elem_smb.click()
+#查看返回值
+#elem.send_keys(u"你好，Python")#输入关键字
+#elem.send_keys(Keys.RETURN)
+    browser.get('http://xyzp.newjobs.com.cn/recruit/networkRecruitmentManage/conf-title.html')
+    source = browser.page_source
+    source = source.encode('gb2312','ignore')
+    print (source)
+def submitadmin():
+    browser=webdriver.Firefox()
+    browser.get('http://xyzpht.newjobs.com.cn')
+    elem_name=browser.find_element_by_id("username")#寻找表单id
+    elem_name.send_keys("jlsrcsc")
+    elem_pwd=browser.find_element_by_id("password")#寻找表单id
+    elem_pwd.send_keys("rczx2017")
+    elem_submit=browser.find_element_by_class("btn btn-login")
+    elem_submit.click()
+submitadmin()
+
+
+    
